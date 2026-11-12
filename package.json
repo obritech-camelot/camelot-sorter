@@ -1,0 +1,22 @@
+{
+  "name": "camelot-sorter",
+  "version": "1.4.3",
+  "description": "Camelot Sorter by OBRI: sort Rekordbox playlists by Camelot key, energy and more",
+  "author": "OBRI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist-win": "electron-builder --win -c.electronDist=electron-dist --publish never",
+    "dist-mac": "electron-builder --mac --publish never"
+  },
+  "devDependencies": { "electron": "33.4.11", "electron-builder": "^25.1.8" },
+  "build": {
+    "appId": "com.dj.camelotsorter",
+    "productName": "Camelot Sorter",
+    "files": ["main.js", "preload.js", "index.html", "package.json"],
+    "mac": { "target": "dmg", "category": "public.app-category.music" },
+    "win": { "target": "nsis", "signAndEditExecutable": false },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true }
+  }
+}

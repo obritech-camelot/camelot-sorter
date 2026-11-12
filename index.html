@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Camelot Sorter by OBRI</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark';document.documentElement.dataset.font=localStorage.getItem('font')||'new'}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@400;500;600&family=Josefin+Sans:wght@400;500;600&family=Marcellus&family=Outfit:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0a0b0f;--panel:#12131a;--panel2:#181a23;--ink:#eceef5;--mute:#868a9c;--line:#232531;--acc:#ecebff;--accink:#0a0b0f;--glow:#221f45;--row:#1b1d27;--hov:#171925;--ok:var(--ok);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.45 'Bricolage Grotesque',system-ui,sans-serif;background:radial-gradient(900px 420px at 50% -140px,var(--glow) 0%,transparent 70%),var(--bg);min-height:100vh}
+main{max-width:980px;margin:0 auto;padding:26px 14px 70px}
+h1{font-size:34px;font-weight:800;margin:0 0 4px;letter-spacing:-.03em}
+p.sub{margin:0 0 18px;color:var(--mute)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 10px 30px -18px #000}
+.up{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.upc{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.upc.ok{border-color:#2f7f5a}
+.up.on .upc{border-color:#6c5ce0;background:#1d1d2b}
+.upc b{font-weight:600}.upc span.d2{color:var(--mute);font-size:13px}
+.upc .nm{font-size:13px;color:var(--ok);word-break:break-all}
+button,select{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;transition:border-color .15s,background .15s}
+button{cursor:pointer}
+button:hover,select:hover{border-color:#3b3e52}
+button.p{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:700}
+button.p:hover{filter:brightness(1.12)}
+button.m{font-weight:600;padding:11px 12px;text-align:left}
+button.m.on{background:linear-gradient(135deg,#2a2660,#3b2a6e);border-color:#6c5ce0;color:#fff;box-shadow:0 0 22px -8px #7b6cf6}
+button:focus-visible,select:focus-visible{outline:2px solid #8b7cf6;outline-offset:2px}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+[hidden]{display:none!important}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#man,#set{position:fixed;inset:0;background:rgba(5,6,10,.72);display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:50;backdrop-filter:blur(4px)}
+.mb{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:560px;width:100%;max-height:86vh;overflow:auto;padding:22px;box-shadow:0 20px 60px -20px #000}
+.mb h2{margin:0 0 6px;font-size:22px}.mb h3{margin:18px 0 6px;font-size:16px}.mb p{margin:0 0 8px}.mb ul{margin:0 0 6px;padding-left:20px}.mb ul li{margin-bottom:6px}#man .mb{max-width:700px}
+.sr{margin:14px 0 18px}.sr .d2{display:block;color:var(--mute);font-size:13px;margin:2px 0 8px}.sr code{display:block;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;word-break:break-all;font-size:13px}
+.made{display:inline-block;padding:7px 14px;border:1px solid var(--line);border-radius:999px;color:var(--mute);text-decoration:none;font-size:13px}.made:hover{color:var(--ink);border-color:#3b3e52}.mb ol{margin:0 0 14px;padding-left:20px}.mb li{margin-bottom:9px}.mb li span{color:var(--mute)}
+.tg{display:flex;flex-wrap:wrap;gap:8px}
+input[type=range]{width:110px;accent-color:#8b7cf6}
+.tg button.m{padding:8px 12px}
+.row label{color:var(--mute);font-size:13px;display:flex;align-items:center;gap:8px}
+.hint{font-size:13px;color:var(--mute);margin:8px 0 0}
+.wheel{display:flex;height:6px;border-radius:3px;overflow:hidden;margin:14px 0 0;opacity:.9;box-shadow:0 0 18px -4px #7b6cf6}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th{text-align:left;font-size:12px;color:var(--mute);font-weight:600;padding:10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:9px 10px;border-bottom:1px solid var(--row);vertical-align:middle}
+tbody tr:hover td{background:var(--hov)}
+tr:last-child td{border-bottom:0}
+td.t b{font-weight:600}td.t div{color:var(--mute);font-size:13px}
+.k{display:inline-block;min-width:38px;text-align:center;font-weight:800;border-radius:7px;padding:4px 8px;color:#0b0c10}
+.d{display:inline-block;width:9px;height:9px;border-radius:50%}
+.n{color:var(--mute);width:34px}
+.stat{color:var(--mute);font-size:13px;margin:0 0 10px}
+.warn{color:#e8a23a;font-size:13px}
+
+:root[data-theme="light"]{color-scheme:light;--bg:#f3f2ef;--panel:#fff;--panel2:#f0efeb;--ink:#17171c;--mute:#6b6b76;--line:#dddbd5;--acc:#17171c;--accink:#fff;--glow:#e6e2ff;--row:#ecebe6;--hov:#f6f5f1;--ok:#1f8a58}
+body{font-size:clamp(15px,.5vw + 11px,21px)}
+main{max-width:min(1500px,95vw)}
+.tb{display:flex;justify-content:flex-end;gap:8px}
+.ttl{text-align:center;font-size:clamp(30px,3.2vw,56px);margin:4px 0 6px}
+.ttl span{color:var(--mute);font-weight:600;font-size:.5em}
+p.sub{text-align:center;margin-bottom:22px}
+.modes{grid-template-columns:repeat(auto-fill,minmax(11em,1fr))}
+.fr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.fl{width:8.5em;flex:none;color:var(--mute);font-size:.9em}
+.fp{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.9em}
+#man .mb{max-width:min(52em,92vw)}#set .mb{max-width:min(36em,92vw)}
+th{font-size:.8em}td.t div{font-size:.88em}
+.tb{align-items:center}.wc{display:inline-flex;gap:4px;margin-left:10px;padding-left:10px;border-left:1px solid var(--line)}.wc button{width:2.6em;padding:8px 0;display:inline-flex;justify-content:center}.wc svg{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round}.wc .x:hover{background:#e5484d;border-color:#e5484d;color:#fff}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--panel);border:1px solid var(--ok);color:var(--ink);padding:14px 22px;border-radius:12px;box-shadow:0 12px 40px -12px #000;z-index:60;max-width:min(42em,92vw);text-align:center;cursor:pointer}#toast b{color:var(--ok)}
+/* ===== refined, technical look ===== */
+:root{--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;--bg:#0b0c0e;--panel:#121417;--panel2:#171a1e;--ink:#e6e8eb;--mute:#8a919b;--line:#23272d;--acc:#e6e8eb;--accink:#0b0c0e;--glow:#161a1f;--row:#1a1d22;--hov:#161a1f;--ok:#7fd1a8;--sel:#c9a45c}
+:root[data-theme="light"]{--bg:#f4f4f2;--panel:#ffffff;--panel2:#f6f6f4;--ink:#16181c;--mute:#6a707a;--line:#dcdcd7;--acc:#16181c;--accink:#ffffff;--glow:#ebebe7;--row:#ecece8;--hov:#f7f7f5;--ok:#1d7f55;--sel:#9a7424}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+body{font-family:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;background:radial-gradient(1000px 480px at 50% -220px,var(--glow),transparent 70%),var(--bg)}
+.ttl{font-weight:500;letter-spacing:.04em;margin:12px 0 6px}
+.ttl span{font-family:var(--mono);font-size:.3em;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);margin-left:1em;vertical-align:.5em}
+p.sub{font-size:.9em;letter-spacing:.01em}
+.panel{border-radius:8px;box-shadow:none;padding:18px}
+button,select{border-radius:6px;padding:8px 14px;font-weight:500;background:var(--panel2)}
+button:hover,select:hover{border-color:var(--mute)}
+button.p{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:600}
+button.m{font-weight:500;padding:10px 12px;border-radius:6px}
+button.m.on{background:transparent;color:var(--ink);border-color:var(--sel);box-shadow:inset 0 0 0 1px var(--sel)}
+.row label,.fl{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.row label select{font-family:inherit;text-transform:none;letter-spacing:0}
+.fp{font-family:var(--mono);font-size:.8em;border-radius:6px}
+.wheel{height:3px;border-radius:0;box-shadow:none;opacity:.85}
+.tw{border-radius:8px}
+th{font-family:var(--mono);font-size:.68em;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
+td.t b{font-weight:500}
+.n,td:nth-child(4),td:nth-child(6){font-family:var(--mono);font-variant-numeric:tabular-nums}
+.k{font-family:var(--mono);font-weight:600;border-radius:4px;padding:3px 7px;box-shadow:none!important;color:#0b0c0e;filter:saturate(.78);letter-spacing:.02em}
+.stat{font-family:var(--mono);font-size:.76em;letter-spacing:.03em}
+.mb{border-radius:10px}.mb h2{font-weight:500;letter-spacing:.02em}
+.mb h3{font-family:var(--mono);font-size:.7em;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-top:22px}
+.sr code{font-family:var(--mono);font-size:.8em;border-radius:6px}
+.wc button{border-radius:6px}
+.made{border-radius:6px;font-family:var(--mono);font-size:.7em;letter-spacing:.14em;text-transform:uppercase}
+#toast{border-radius:8px}
+.danger{border-color:#7a3a3e;color:#e8777c}.danger:hover{background:#e5484d;border-color:#e5484d;color:#fff}
+:root[data-theme="light"] .danger{color:#b3282e;border-color:#d9a3a5}
+.ib{width:2.6em;padding:8px 0;display:inline-flex;justify-content:center;align-items:center}.ib svg{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ttl .by{display:inline-block;vertical-align:middle;font-family:var(--mono);font-size:max(.3em,11px);font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:.6em .95em;margin-left:1.2em;background:var(--panel2);transition:border-color .15s,color .15s}.ttl .by:hover{color:var(--ink);border-color:var(--sel)}.ttl .by:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+#pl button.m.on{background:color-mix(in srgb,var(--sel) 14%,transparent)}
+input[type=number]{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 8px;width:4.6em}input[type=number]:focus-visible{outline:2px solid var(--sel);outline-offset:2px}.row label input{text-transform:none;letter-spacing:0;font-family:inherit}
+/* ===== deco look: geometric fonts, regular sizes ===== */
+:root{--disp:"Josefin Sans",Futura,"Century Gothic","Avenir Next","Segoe UI",sans-serif;--ui:Jost,Futura,"Century Gothic","Avenir Next","Segoe UI",system-ui,sans-serif}
+body{font-family:var(--ui);font-weight:500}
+.ttl{font-family:var(--disp);font-weight:600;text-transform:uppercase;letter-spacing:.26em;font-size:clamp(30px,3.2vw,54px);margin:10px 0 6px;padding-left:.26em}
+.ttl .by{font-family:var(--disp);font-weight:600;font-size:max(.3em,11px);letter-spacing:.22em;padding:.55em .9em;margin-left:1.4em}
+p.sub{font-size:.95em;letter-spacing:.06em;margin-bottom:22px}
+p.sub::before{content:"\25C6";display:block;text-align:center;line-height:12px;height:12px;font-size:9px;color:var(--sel);width:min(300px,55vw);margin:0 auto 9px;background:linear-gradient(90deg,transparent,var(--sel) 44%,transparent 44%,transparent 56%,var(--sel) 56%,transparent) center/100% 1px no-repeat}
+button,select,input[type=number]{font-weight:600}
+button.m{font-weight:500}
+.row label,.fl,th,.mb h3,.made{font-family:var(--disp);font-weight:600;letter-spacing:.14em}
+.row label,.fl{font-size:.72em}
+th{font-size:.68em}
+td.t b{font-weight:600}.mb h2{font-weight:600}.hint{font-weight:500}
+.fr button,.upc button,#bf,.tb>button,#delrow button{font-size:.86em;padding:5px 12px}
+.upc button.p,#bf{background:transparent;color:var(--ink);border-color:var(--mute)}
+.upc button.p:hover,#bf:hover{background:var(--panel2);border-color:var(--ink);filter:none}
+.act{border-color:color-mix(in srgb,var(--sel) 40%,var(--line));background:color-mix(in srgb,var(--sel) 8%,var(--panel))}
+.actrow{justify-content:space-between;gap:10px}.actrow>.row{gap:8px}
+.act #expm3u{background:var(--sel);border-color:var(--sel);color:#16120a;font-family:var(--disp);font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:9px 28px}
+.act #expm3u:hover{filter:brightness(1.07)}
+:root[data-theme="light"] .act #expm3u{color:#fff}
+.act select{min-width:11em}
+.act .hint{margin:8px 0 0;font-size:.85em}
+:root{--ui:Outfit,Jost,Futura,"Century Gothic","Avenir Next","Segoe UI",system-ui,sans-serif;--ttl:Marcellus,"Josefin Sans",Georgia,serif}
+.ttl{font-family:var(--ttl);font-weight:400;letter-spacing:.22em}
+:root[data-font="prev"]{--ui:Jost,Futura,"Century Gothic","Avenir Next","Segoe UI",system-ui,sans-serif;--ttl:"Josefin Sans",Futura,"Century Gothic",sans-serif}
+:root[data-font="prev"] .ttl{font-weight:600;letter-spacing:.26em}
+:root[data-font="tech"]{--disp:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;--ui:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;--ttl:"IBM Plex Sans","Segoe UI",system-ui,sans-serif}
+:root[data-font="tech"] .ttl{font-weight:500;letter-spacing:.06em}
+.edit{cursor:text;border-bottom:1px dotted var(--mute);padding:0 2px}
+#gsi{width:4.4em}
+</style></head><body><main>
+<div class="tb"><button id="setb" hidden>Settings</button><button id="help">How to use</button><button class="ib" id="fsi" hidden aria-label="Toggle fullscreen"></button><span class="wc" id="wc" hidden><button id="wmin" title="Minimize" aria-label="Minimize"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5h10"/></svg></button><button id="wmax" title="Maximize / Restore" aria-label="Maximize or restore"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/></svg></button><button id="wcls" class="x" title="Close" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></button></span></div>
+<h1 class="ttl">Camelot Sorter <a class="by" href="https://soundcloud.com/obri_gado" target="_blank" rel="noopener noreferrer" title="OBRI on SoundCloud">by OBRI</a></h1>
+<p class="sub">Load a Rekordbox playlist export, then reorder it by key, BPM and energy.</p>
+
+<div class="panel">
+<div class="up">
+<div class="upc" id="c1"><b>Tracklist</b><span class="d2">Rekordbox .txt export: titles, BPM, key</span><button class="p" id="b1">Browse .txt</button><span class="nm" id="s1"></span></div>
+<div class="upc" id="c2"><b>File locations</b><span class="d2">Rekordbox .m3u export: needed to re-import</span><button class="p" id="b2">Browse .m3u</button><span class="nm" id="s2"></span></div>
+</div>
+<input type="file" id="f1" accept=".txt,.csv,.tsv" hidden><input type="file" id="f2" accept=".m3u,.m3u8" hidden>
+<p class="hint">Browse for the files, or drop them anywhere on this page. Load both for a playlist you can send back to Rekordbox.</p>
+<p class="hint warn" id="msg"></p>
+</div>
+
+<div class="panel" id="lib" hidden>
+<div class="fr"><span class="fl">Exports folder</span><span class="fp" id="libp">Not set</span><button id="pick">Choose</button></div>
+<div class="fr"><span class="fl">Save folder</span><span class="fp" id="fp2">Not set</span><button id="outpick">Choose</button><button id="openf">Open</button></div>
+<div class="row" style="margin-top:14px"><button class="p" id="bf">Browse files</button><input type="file" id="fm" accept=".txt,.csv,.tsv,.m3u,.m3u8" multiple hidden><span class="hint" style="margin:0">Or drop your .txt and .m3u files anywhere in this window.</span></div>
+<div id="pl" class="modes" style="margin:12px 0 0"></div><p class="hint" id="loaded" style="color:var(--ok);margin:8px 0 0"></p>
+<div class="row" id="delrow" style="margin-top:12px" hidden><button class="danger" id="delpl" hidden>Delete playlists</button><button class="danger" id="delsrt" hidden>Delete sorted playlists</button><span class="hint" style="margin:0">Moves the exported .txt and .m3u files, or the sorted .m3u8 playlists this app made, to the Recycle Bin. Your music is not touched.</span></div></div>
+<div id="app">
+<div class="panel act">
+<div class="row actrow"><div class="row"><select id="xs" aria-label="Export scope"><option value="all" selected>All sorts</option><option value="one">Only selected sort</option></select>
+<button class="p" id="expm3u">Sort and save</button></div>
+<div class="row"><button id="reset">Restore original order</button>
+<button id="clr">Clear playlist</button></div></div>
+<p class="hint">Saves the sorted .m3u8 playlists straight into your save folder (or your exports folder if none is set), named like "# Classic Psy [Energy Build].m3u8". Nothing opens by itself: click the Done message or use Open. If no folder is set, you are asked once.</p>
+<p class="hint" id="xmsg" style="color:var(--ok)"></p>
+</div>
+<div class="panel">
+<div class="modes" id="modes"></div>
+<div class="row">
+<label>Start key <select id="start"></select></label>
+<label>Key smoothing <select id="smooth"><option value="1">Off</option><option value="3">Light</option><option value="5" selected>Medium</option><option value="8">Strong</option></select></label>
+<label>Year range <select id="yr"><option value="0">Same year</option><option value="1">± 1 year</option><option value="2">± 2 years</option><option value="3">± 3 years</option><option value="4">± 4 years</option><option value="5" selected>± 5 years</option><option value="6">± 6 years</option><option value="7">± 7 years</option><option value="8">± 8 years</option><option value="10">± 10 years</option><option value="12">± 12 years</option><option value="15">± 15 years</option><option value="20">± 20 years</option></select></label>
+<label>Key format <select id="kf"><option value="both" selected>Camelot + classic</option><option value="cls">Classic (Fm, Bm, Abm)</option><option value="cam">Camelot (4A, 10A)</option></select></label>
+<label id="wl" hidden>Waves <select id="waves"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+<label id="wl2" hidden>Wave direction <select id="wd"><option value="lo" selected>Start low, rise first</option><option value="hi">Start high, fall first</option></select></label>
+</div>
+<div class="row" style="margin-top:12px">
+<label>Grouping strength <input type="range" id="gs" min="0" max="100" step="1" value="40"><span id="gsv" class="edit" title="Click to type a value">40%</span><input type="number" id="gsi" min="0" max="100" hidden></label>
+<div class="tg"><button class="m on" id="gg" aria-pressed="true">Group by genre</button><button class="m on" id="gy" aria-pressed="true">Group by year</button><button class="m on" id="na" aria-pressed="true">No same artist twice</button></div>
+</div>
+<p class="hint" id="modehint"></p>
+<div class="wheel" id="wheel"></div>
+</div>
+<p class="stat" id="stat"></p>
+<div class="tw"><table><thead><tr><th></th><th>#</th><th>Track</th><th>BPM</th><th>Key</th><th>Year</th><th>Genre</th></tr></thead><tbody id="body"></tbody></table></div>
+</div>
+<div style="text-align:center;margin-top:30px"><a class="made" href="https://soundcloud.com/obri_gado" target="_blank" rel="noopener noreferrer">Made by OBRI</a></div>
+</main>
+<div id="toast" hidden role="status" aria-live="polite"></div>
+<div id="man" hidden role="dialog" aria-label="How to use"><div class="mb"><h2>How to use</h2>
+<p>Export a playlist from Rekordbox, load it here, choose how to sort it, export, then import the result back into Rekordbox.</p>
+<h3>1. Prepare in Rekordbox</h3><ul>
+<li>Analyze your tracks so each one has a BPM and a key. Tracks without a key are placed last.</li>
+<li>Right-click the column headers in the track list and show <b>Artist, BPM, Key, Year, Genre, Time and Location</b>. Rekordbox only exports the columns you can see.</li>
+<li>Right-click your playlist and choose <b>Export a playlist to a file</b>. Export it twice: once as <b>.txt</b> (tracklist, BPM, key) and once as <b>.m3u</b> (file locations). Menu names can differ a little between Rekordbox versions.</li>
+<li>Give both files the same name, for example <b>"# Classic Psy"</b>. The app uses that name for the results.</li>
+<li>Export from the computer that holds your music, so the file locations match.</li></ul>
+<h3>2. Load your playlist</h3><ul>
+<li><b>Choose exports folder:</b> pick the folder where you keep your Rekordbox exports. Its playlists are listed and refresh when you come back to the app. Click one to load it.</li>
+<li><b>Browse files:</b> pick the .txt and .m3u files yourself. Select both at once.</li>
+<li><b>Drag and drop:</b> drop both files anywhere in the window.</li>
+<li><b>Delete playlists:</b> clears the interface and moves the listed .txt and .m3u files to the Recycle Bin (Trash on Mac) after you confirm. <b>Delete sorted playlists</b> does the same for the sorted .m3u8 files this app made (and any old "[Sorted]" folders). Your music files are never touched.</li></ul>
+<h3>3. Choose a sort</h3><ul>
+<li><b>Harmonic flow:</b> chains tracks through the Camelot wheel so every transition is a compatible mix. You can pick a start key.</li>
+<li><b>Camelot order:</b> 1A, 1B, 2A ... 12B, by BPM inside each key.</li>
+<li><b>Energy build:</b> low to high energy (BPM plus star rating).</li>
+<li><b>Energy come-down:</b> high to low energy.</li>
+<li><b>Waves:</b> energy rises and falls in 2 to 5 waves. Choose whether the first wave rises or falls.</li>
+<li><b>BPM ascending / descending:</b> plain BPM sorts.</li></ul>
+<h3>4. Fine-tune</h3><ul>
+<li><b>Key smoothing:</b> in the energy and wave modes, lets the app choose a slightly different next track so keys mix better. Higher means smoother keys but a looser energy curve.</li>
+<li><b>Group by genre / Group by year:</b> prefers neighbors with the same genre, or release years within the <b>Year range</b> you type in (default 5 years; use 3, 7 or any value). The strength slider sets how much (default 40%). Harmonic flow, Energy and Waves use it.</li>
+<li><b>No same artist twice:</b> stops one artist from playing back to back.</li>
+<li><b>Key format:</b> show Camelot (8A), classic (Am) or both.</li>
+<li><b>Dots between tracks:</b> green mixes well, yellow is okay, red clashes. <b>Restore original order</b> undoes everything.</li></ul>
+<h3>5. Export</h3><ul>
+<li>Choose <b>All sorts</b> (seven playlists) or <b>Only selected sort</b>, then click <b>Sort and save</b>.</li>
+<li>Files are named like <b>"# Classic Psy [Energy Build].m3u8"</b>: your original name, then the full method in brackets.</li>
+<li>They save <b>directly</b> into your save folder (or your exports folder if you have not set one), with no extra folders. Change the save folder in <b>Settings</b> or at the top. Nothing opens by itself: click the Done message, or the <b>Open</b> button next to the save folder.</li>
+</ul>
+<h3>6. Import into Rekordbox</h3><ul>
+<li>In Rekordbox go to <b>File &gt; Import &gt; Import Playlist</b> and pick a .m3u8 file. Each file becomes its own playlist, so you can import several and compare.</li>
+<li>Open the new playlist and set its sort column to <b>#</b> so the order stays.</li></ul>
+<h3>7. Put it on a USB drive</h3>
+<p>Switch Rekordbox to Export mode, plug in your drive, drag the playlist onto it, then eject it from Rekordbox before unplugging.</p>
+<h3>Settings</h3>
+<p>The <b>Settings</b> button (top right) lets you choose the exports folder and the save folder, reset either one, and open the save folder.</p>
+<h3>If something looks wrong</h3><ul>
+<li><b>Key warning:</b> some tracks were not analyzed in Rekordbox. Analyze them and export again.</li>
+<li><b>No Year or Genre warning:</b> those columns were not visible when you exported. Grouping is skipped.</li>
+<li><b>Nothing to export:</b> load the .m3u too, because it holds the file locations.</li>
+<li><b>Playlist will not import:</b> the file locations must match this computer. Export and sort on the computer that holds your music.</li></ul>
+<button class="p" id="mx" style="margin-top:10px">Got it</button></div></div>
+<div id="set" hidden role="dialog" aria-label="Settings"><div class="mb"><h2>Settings</h2>
+<div class="sr"><b>Exports folder</b><span class="d2">Where your Rekordbox .txt and .m3u files are read from.</span><code id="sp1"></code><div class="row"><button id="sc1">Choose folder</button><button id="sx1">Clear</button></div></div>
+<div class="sr"><b>Save folder</b><span class="d2">Where the sorted .m3u8 playlists are saved.</span><code id="sp2"></code><div class="row"><button id="sc2">Choose folder</button><button id="sx2">Use default</button><button id="so2">Open folder</button></div></div>
+<div class="sr"><b>Font style</b><div class="row" style="margin-top:8px"><button class="m" id="fn">New</button><button class="m" id="fp">Previous</button><button class="m" id="ft">Technical</button></div></div>
+<div class="sr"><b>Appearance</b><div class="row" style="margin-top:8px"><button class="m" id="thd">Dark</button><button class="m" id="thl">Light</button></div></div>
+<div class="sr"><b>Window</b><span class="d2">Choose whether the app opens in fullscreen. You can switch any time with the fullscreen icon at the top or by pressing F11.</span><div class="row"><button class="m" id="fsb">Fullscreen: on</button></div></div>
+<button class="p" id="sd">Done</button></div></div>
+<script>
+const COL=['#59d6b5','#5bd68a','#8fdc5c','#c8dc54','#f0d24b','#f4a94a','#f47f5b','#f26a8a','#e26ad0','#a67cf0','#6f93f2','#4cc0ee'];
+const MUS={'Abm':'1A','G#m':'1A','B':'1B','Ebm':'2A','D#m':'2A','F#':'2B','Gb':'2B','Bbm':'3A','A#m':'3A','Db':'3B','C#':'3B','Fm':'4A','Ab':'4B','G#':'4B','Cm':'5A','Eb':'5B','D#':'5B','Gm':'6A','Bb':'6B','A#':'6B','Dm':'7A','F':'7B','Am':'8A','C':'8B','Em':'9A','G':'9B','Bm':'10A','D':'10B','F#m':'11A','Gbm':'11A','A':'11B','C#m':'12A','Dbm':'12A','E':'12B'};
+const CLS={'1A':'Abm','1B':'B','2A':'Ebm','2B':'F#','3A':'Bbm','3B':'Db','4A':'Fm','4B':'Ab','5A':'Cm','5B':'Eb','6A':'Gm','6B':'Bb','7A':'Dm','7B':'F','8A':'Am','8B':'C','9A':'Em','9B':'G','10A':'Bm','10B':'D','11A':'F#m','11B':'A','12A':'C#m','12B':'E'};
+const MODES=[
+['harm','Harmonic flow','Follows the Camelot wheel so every transition is a compatible mix. BPM breaks ties.'],
+['cam','Camelot order','1A, 1B, 2A, 2B … 12B, with BPM ascending inside each key.'],
+['up','Energy build','Low BPM to high BPM. Key smoothing keeps neighbouring tracks compatible.'],
+['down','Energy come-down','High BPM to low BPM, with key smoothing.'],
+['wave','Waves','Energy rises and falls in several waves across the set. Key smoothing applies.'],
+['bpmu','BPM ascending','Plain sort, slowest first.'],
+['bpmd','BPM descending','Plain sort, fastest first.']];
+let tracks=[],orig=[],mode='harm',files={};
+const $=id=>document.getElementById(id);
+function camelot(k){if(!k)return null;k=k.trim();let m=k.match(/^(\d{1,2})\s*([ABab])$/);if(m)return(+m[1]<1||+m[1]>12)?null:m[1]+m[2].toUpperCase();
+ k=k.replace(/♯/g,'#').replace(/♭/g,'b').replace(/\s*(minor|min)$/i,'m').replace(/\s*(major|maj)$/i,'');return MUS[k]||MUS[k[0].toUpperCase()+k.slice(1)]||null}
+const kn=t=>t.cam?+t.cam.slice(0,-1):99, kl=t=>t.cam?t.cam.slice(-1):'';
+function kdist(a,b){if(!a.cam||!b.cam)return 6;const na=kn(a),nb=kn(b),la=kl(a),lb=kl(b);let d=Math.abs(na-nb);d=Math.min(d,12-d);
+ if(la===lb){if(d===0)return 0;if(d===1)return 1;if(d===2)return 2;if((nb-na+12)%12===7)return 2;return 3+d/4}
+ if(d===0)return 1;if(d===1)return 3;return 5}
+let GG=true,GY=true,GF=.4,YR=5;
+const gcost=(a,b)=>{let c=0;if(GG&&a.genre&&b.genre){const x=a.genre.toLowerCase(),y=b.genre.toLowerCase();if(x!==y){const w=new Set(x.split(/[\s\/,&-]+/));c+=y.split(/[\s\/,&-]+/).some(z=>z&&w.has(z))?.25:.5}}if(GY&&a.year&&b.year){const d=Math.abs(a.year-b.year);c+=d<=YR?(YR?d/YR*.28:0):.6}return c*GF*2.5};
+const cost=(a,b)=>kdist(a,b)+Math.abs(a.bpm-b.bpm)*.08+gcost(a,b);
+function dec(buf){const u=new Uint8Array(buf);if(u[0]===0xFF&&u[1]===0xFE)return new TextDecoder('utf-16le').decode(buf);if(u[0]===0xFE&&u[1]===0xFF)return new TextDecoder('utf-16be').decode(buf);
+ if(u[1]===0&&u[3]===0)return new TextDecoder('utf-16le').decode(buf);return new TextDecoder('utf-8').decode(buf)}
+function parseTxt(s){s=s.replace(/^\uFEFF/,'');const L=s.split(/\r?\n/).filter(x=>x.trim());if(!L.length)return[];
+ const del=L[0].includes('\t')?'\t':(L[0].includes(';')?';':',');const H=L[0].split(del).map(h=>h.trim().toLowerCase());
+ const f=(...n)=>H.findIndex(h=>n.includes(h));const iT=f('track title','title','name'),iA=f('artist'),iB=f('bpm'),iK=f('key'),iL=f('location','file path','path'),iR=f('rating'),iY=f('year','release year'),iG=f('genre'),iE=f('energy'),iTm=f('time','duration');
+ return L.slice(1).map(r=>{const c=r.split(del);const g=i=>i>=0?(c[i]||'').trim():'';const t=g(iTm);let sec=0;if(t){const p=t.split(':').map(Number);sec=p.length===2?p[0]*60+p[1]:p.length===3?p[0]*3600+p[1]*60+p[2]:0}
+ return{title:g(iT),artist:g(iA),bpm:parseFloat(g(iB))||0,key:g(iK),cam:camelot(g(iK)),path:g(iL),rating:parseFloat(g(iR))||0,year:+(g(iY).match(/(19|20)\d\d/)||[0])[0],genre:g(iG),energy:parseFloat(g(iE))||0,sec}}).filter(t=>t.title||t.path)}
+function parseM3u(s){const out=[];let inf=null;s.replace(/^\uFEFF/,'').split(/\r?\n/).forEach(l=>{l=l.trim();if(!l)return;
+ if(l.startsWith('#EXTINF')){const m=l.match(/#EXTINF:(-?\d+)[^,]*,(.*)/);inf={sec:m?+m[1]:0,name:m?m[2]:''}}else if(l[0]!=='#'){out.push({path:l,inf});inf=null}});return out}
+const base=p=>p.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toLowerCase();
+function build(){let t=files.txt?[...files.txt]:[];const m=files.m3u||[];
+ if(!t.length&&m.length){t=m.map(e=>{const nm=e.inf?e.inf.name:base(e.path);const i=nm.indexOf(' - ');return{title:i>0?nm.slice(i+3):nm,artist:i>0?nm.slice(0,i):'',bpm:0,key:'',cam:null,path:e.path,rating:0,energy:0,sec:e.inf?e.inf.sec:0}})}
+ else if(m.length){const used=new Set();t.forEach(x=>{if(x.path)return;const tt=x.title.toLowerCase();const j=m.findIndex((e,i)=>!used.has(i)&&base(e.path).includes(tt));if(j>=0){used.add(j);x.path=m[j].path}});
+  if(m.length===t.length)t.forEach((x,i)=>{if(!x.path)x.path=m[i].path})}
+ tracks=t.map((x,i)=>({...x,i}));orig=[...tracks];
+ const miss=tracks.filter(x=>!x.cam).length,np=tracks.filter(x=>!x.path).length;let w=[];
+ if(miss)w.push(miss+' track(s) have no readable key and are placed last.');if(files.txt&&!tracks.some(t=>t.year||t.genre))w.push('No Year or Genre columns found, so grouping by year and genre is skipped. Show those columns in Rekordbox before exporting.');if(np)w.push(np+' track(s) have no file location. Load the .m3u to export a playlist you can re-import.');
+ $('msg').textContent=w.join(' ');fillStart();apply()}
+const kfmt=k=>{const f=$('kf').value;return f==='cam'?k:f==='cls'?CLS[k]:k+' '+CLS[k]};
+function fillStart(){const cur=$('start').value;const ks=[...new Set(tracks.filter(t=>t.cam).map(t=>t.cam))].sort((a,b)=>kn({cam:a})-kn({cam:b})||a.localeCompare(b));
+ $('start').innerHTML='<option value="">Auto</option>'+ks.map(k=>`<option value="${k}">${kfmt(k)}</option>`).join('');if(cur&&ks.includes(cur))$('start').value=cur}
+function refine(list,w){if(w<=1)return list;const rest=[...list],out=[];while(rest.length){if(!out.length){out.push(rest.shift());continue}
+ const last=out[out.length-1];let bi=0,bc=1e9;const n=Math.min(w,rest.length);for(let i=0;i<n;i++){const c=cost(last,rest[i])+i*.35;if(c<bc){bc=c;bi=i}}out.push(rest.splice(bi,1)[0])}return out}
+const energy=t=>t.energy||t.bpm+(t.rating||0)*.5;
+function arrange0(){const has=tracks.filter(t=>t.cam),no=tracks.filter(t=>!t.cam);const w=+$('smooth').value,sk=$('start').value;
+ const byB=(a,b)=>a.bpm-b.bpm;let r;
+ if(mode==='bpmu')return[...tracks].sort(byB);if(mode==='bpmd')return[...tracks].sort((a,b)=>b.bpm-a.bpm);
+ if(mode==='cam')r=[...has].sort((a,b)=>kn(a)-kn(b)||kl(a).localeCompare(kl(b))||a.bpm-b.bpm);
+ else if(mode==='up')r=refine([...has].sort((a,b)=>energy(a)-energy(b)),w);
+ else if(mode==='down')r=refine([...has].sort((a,b)=>energy(b)-energy(a)),w);
+ else if(mode==='wave'){const n=has.length,W=+$('waves').value,s=[...has].sort((a,b)=>energy(a)-energy(b));
+  const tg=Array.from({length:n},(_,i)=>({i,v:.5+($('wd').value==='hi'?.5:-.5)*Math.cos(2*Math.PI*W*i/Math.max(n-1,1))+i*1e-6}));tg.sort((a,b)=>a.v-b.v);
+  const o=new Array(n);tg.forEach((x,rk)=>o[x.i]=s[rk]);r=refine(o,w)}
+ else{let rest=[...has].sort(byB),out=[];if(rest.length){let st=sk?rest.findIndex(t=>t.cam===sk):0;if(st<0)st=0;out.push(rest.splice(st,1)[0]);
+  while(rest.length){const last=out[out.length-1];let bi=0,bc=1e9;rest.forEach((t,i)=>{const c=cost(last,t);if(c<bc){bc=c;bi=i}});out.push(rest.splice(bi,1)[0])}}r=out}
+ return r.concat(no)}
+const ak=t=>new Set((t.artist||'').toLowerCase().split(/\s*(?:,|&|;|\bfeat\.?|\bft\.?|\bfeaturing\b|\bx\b|\band\b|\bvs\.?)\s*/).map(x=>x.trim()).filter(Boolean));
+const clash=(a,b)=>{if(!a||!b)return false;const A=a._k||(a._k=ak(a)),B=b._k||(b._k=ak(b));for(const x of A)if(B.has(x))return true;return false};
+function spread(l){if(!$('na').classList.contains('on'))return l;l=[...l];
+ for(let i=1;i<l.length;i++){if(!clash(l[i-1],l[i]))continue;let bj=-1,bc=1e9;
+  for(let j=i+1;j<l.length;j++){const x=l[j];if(clash(l[i-1],x)||clash(x,l[i]))continue;const nx=l[j+1];if(nx&&clash(l[j-1],nx))continue;const c=cost(l[i-1],x)+(j-i)*.25;if(c<bc){bc=c;bj=j}}
+  if(bj>=0){l.splice(i,0,l.splice(bj,1)[0]);continue}
+  const a=l[i];if(l[i+1]&&clash(l[i-1],l[i+1]))continue;
+  for(let k=i-2;k>=0;k--){if(!clash(l[k],a)&&!clash(a,l[k+1])){l.splice(i,1);l.splice(k+1,0,a);break}}}
+ return l}
+const arrange=()=>{GF=$('gs').value/100;const yv=parseInt($('yr').value,10);YR=isNaN(yv)?5:Math.max(0,Math.min(99,yv));GG=$('gg').classList.contains('on');GY=$('gy').classList.contains('on');return spread(arrange0())};
+function apply(){tracks=arrange();render()}
+const chip=t=>{if(!t.cam)return'<span class="k" style="background:var(--line)">?</span>';const c=CLS[t.cam],f=$('kf').value;const txt=f==='cam'?t.cam:f==='cls'?c:t.cam+' '+c;return`<span class="k" style="background:${COL[kn(t)-1]};box-shadow:0 0 14px -4px ${COL[kn(t)-1]}">${txt}</span>`};
+function render(){const b=$('body');if(!tracks.length){b.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--mute);padding:28px">Load a playlist to see your tracks here.</td></tr>';$('stat').textContent='';return}b.innerHTML=tracks.map((t,i)=>{let dot='';if(i){const d=kdist(tracks[i-1],t);dot=`<span class="d" title="${d<=1?'Compatible':d<=2?'Close':'Key clash'}" style="background:${d<=1?'#3fbf7f':d<=2?'#e8b73a':'#e2584f'}"></span>`}
+ return`<tr><td style="width:18px">${dot}</td><td class="n">${i+1}</td><td class="t"><b>${esc(t.title)}</b><div>${esc(t.artist)}</div></td><td>${t.bpm?t.bpm.toFixed(t.bpm%1?1:0):'–'}</td><td>${chip(t)}</td><td>${t.year||'–'}</td><td>${esc(t.genre||'–')}</td></tr>`}).join('');
+ let ok=0;tracks.forEach((t,i)=>{if(i&&kdist(tracks[i-1],t)<=1)ok++});
+ let gm=0,gt=0,ym=0,yt=0;tracks.forEach((t,i)=>{if(!i)return;const q=tracks[i-1];if(t.genre&&q.genre){gt++;if(t.genre.toLowerCase()===q.genre.toLowerCase())gm++}if(t.year&&q.year){yt++;if(Math.abs(t.year-q.year)<=YR)ym++}});
+ $('stat').textContent=tracks.length+' tracks · '+ok+' of '+Math.max(tracks.length-1,0)+' transitions fully compatible'+(gt?' · '+Math.round(gm*100/gt)+'% same genre':'')+(yt?' · '+Math.round(ym*100/yt)+'% within '+YR+' yrs':'')}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function crc32(b){let t=crc32.t;if(!t){t=crc32.t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}let r=-1;for(let i=0;i<b.length;i++)r=t[(r^b[i])&255]^(r>>>8);return(r^-1)>>>0}
+function zipMany(es){const e=new TextEncoder();let off=0;const parts=[],cds=[];
+for(const f of es){const nb=e.encode(f.name),d=e.encode(f.text),crc=crc32(d),L=d.length,N=nb.length;
+const lh=new DataView(new ArrayBuffer(30));lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(12,0x21,true);lh.setUint32(14,crc,true);lh.setUint32(18,L,true);lh.setUint32(22,L,true);lh.setUint16(26,N,true);
+const cd=new DataView(new ArrayBuffer(46));cd.setUint32(0,0x02014b50,true);cd.setUint16(4,20,true);cd.setUint16(6,20,true);cd.setUint16(8,0x0800,true);cd.setUint16(14,0x21,true);cd.setUint32(16,crc,true);cd.setUint32(20,L,true);cd.setUint32(24,L,true);cd.setUint16(28,N,true);cd.setUint32(42,off,true);
+parts.push(lh,nb,d);cds.push(cd,nb);off+=30+N+L}
+const cs=cds.reduce((a,x)=>a+x.byteLength,0);const ec=new DataView(new ArrayBuffer(22));ec.setUint32(0,0x06054b50,true);ec.setUint16(8,es.length,true);ec.setUint16(10,es.length,true);ec.setUint32(12,cs,true);ec.setUint32(16,off,true);
+return new Blob([...parts,...cds,ec])}
+const tc=t=>t.replace(/\b\w/g,c=>c.toUpperCase());
+const ini=l=>l.split(/[\s-]+/).map(w=>w[0]).join('').toUpperCase();
+const bn=()=>{const n=files.names||{};return n.m3u||n.txt||'playlist'};
+async function dl(name,text){try{const d=window.claude?await claude.use('downloads'):null;if(!d){const a=document.createElement('a');a.href=URL.createObjectURL(text instanceof Blob?text:new Blob([text]));a.download=name;document.body.appendChild(a);a.click();a.remove();return}await d.save({filename:name,data:text})}catch(e){if(!e||e.code!=='declined')$('msg').textContent='Could not save the file: '+((e&&e.message)||'unknown error')}}
+const m3u=l=>'#EXTM3U\n'+l.filter(t=>t.path).map(t=>`#EXTINF:${Math.round(t.sec)},${t.artist?t.artist+' - ':''}${t.title}\n${t.path}`).join('\n')+'\n';
+$('expm3u').onclick=()=>{if(!tracks.length){$('msg').textContent='Load a playlist first.';return}if(window.api&&$('xs').value==='all'){const cur=tracks,pm=mode;tracks=[...orig];const es=MODES.map(m=>{mode=m[0];return{name:bn()+' ['+tc(m[1])+'].m3u8',text:m3u(arrange())}});mode=pm;tracks=cur;saveAll(es);return}if($('xs').value==='one'){const lb=MODES.find(m=>m[0]===mode)[1];if(!window.claude){dl(bn()+' ['+tc(lb)+'].m3u8',m3u(tracks));return}dl(bn()+' ['+tc(lb)+'].zip',zipMany([{name:bn()+' ['+tc(lb)+'].m3u8',text:m3u(tracks)}]));return}const cur=tracks,pm=mode;tracks=[...orig];const es=MODES.map(m=>{mode=m[0];return{name:bn()+' ['+tc(m[1])+'].m3u8',text:m3u(arrange())}});mode=pm;tracks=cur;dl(bn()+'.zip',zipMany(es))};
+$('reset').onclick=()=>{tracks=[...orig];render()};
+$('clr').onclick=()=>{tracks=[];orig=[];files={};['s1','s2'].forEach(i=>$(i).textContent='');['c1','c2'].forEach(i=>$(i).classList.remove('ok'));$('msg').textContent='';$('xmsg').textContent='';const l=$('loaded');if(l)l.textContent='';fillStart();render();if(window.hlPl)window.hlPl()};
+$('modes').innerHTML=MODES.map(m=>`<button class="m${m[0]===mode?' on':''}" data-m="${m[0]}">${m[1]}</button>`).join('');
+$('modes').onclick=e=>{const b=e.target.closest('button');if(!b)return;mode=b.dataset.m;[...$('modes').children].forEach(x=>x.classList.toggle('on',x===b));
+ $('modehint').textContent=MODES.find(m=>m[0]===mode)[2];$('wl').hidden=$('wl2').hidden=mode!=='wave';apply()};
+$('modehint').textContent=MODES[0][2];
+['gg','gy','na'].forEach(id=>$(id).onclick=()=>{const b=$(id),on=!b.classList.contains('on');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);tracks=[...orig];apply()});
+$('gs').oninput=()=>{$('gsv').textContent=$('gs').value+'%';tracks=[...orig];apply()};
+$('yr').oninput=$('yr').onchange=()=>{tracks=[...orig];apply()};
+$('gsv').onclick=e=>{if(e)e.preventDefault();const i=$('gsi');i.value=$('gs').value;$('gsv').hidden=true;i.hidden=false;i.focus();i.select()};
+const gsApply=ok=>{const i=$('gsi');if(ok&&i.value!==''){const v=Math.max(0,Math.min(100,Math.round(+i.value)));$('gs').value=v;$('gsv').textContent=v+'%';tracks=[...orig];apply();try{document.dispatchEvent(new Event('change'))}catch(e){}}i.hidden=true;$('gsv').hidden=false};
+$('gsi').onblur=()=>{if(!$('gsi').hidden)gsApply(true)};
+$('gsi').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();gsApply(true)}else if(e.key==='Escape'){e.stopPropagation();gsApply(false)}};
+['start','smooth','waves','wd'].forEach(id=>$(id).onchange=()=>{tracks=[...orig];apply()});
+$('kf').onchange=()=>{fillStart();render()};
+$('wheel').innerHTML=COL.map((c,i)=>`<div style="flex:1;background:${c}" title="${i+1}"></div>`).join('');
+async function load(fl,c,sn){for(const f of fl){const n=f.name.toLowerCase();const t=dec(await f.arrayBuffer());if(n.endsWith('.m3u')||n.endsWith('.m3u8'))files.m3u=parseM3u(t);else files.txt=parseTxt(t);$(sn).textContent=f.name;$(c).classList.add('ok');(files.names=files.names||{})[/\.m3u8?$/i.test(n)?'m3u':'txt']=f.name.replace(/\.[^.]+$/,'')}build()}
+[['1','f1','c1','s1'],['2','f2','c2','s2']].forEach(([n,f,c,sn])=>{$('b'+n).onclick=()=>$(f).click();$(f).onchange=e=>load(e.target.files,c,sn)});
+async function loadAny(fl){fl=[...fl];if(fl.some(f=>!/\.m3u8?$/i.test(f.name)))files={names:{}};for(const f of fl){const m=/\.m3u8?$/i.test(f.name);await load([f],m?'c2':'c1',m?'s2':'s1')}}
+let dc=0;const up=document.querySelector('.up');
+window.addEventListener('dragenter',e=>{e.preventDefault();dc++;up.classList.add('on')});
+window.addEventListener('dragleave',e=>{e.preventDefault();dc=Math.max(0,dc-1);if(!dc)up.classList.remove('on')});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>{e.preventDefault();dc=0;up.classList.remove('on');if(e.dataTransfer&&e.dataTransfer.files.length)loadAny(e.dataTransfer.files)});
+$('help').onclick=()=>$('man').hidden=false;$('mx').onclick=()=>$('man').hidden=true;$('man').onclick=e=>{if(e.target.id==='man')$('man').hidden=true};document.addEventListener('keydown',e=>{if(e.key==='Escape')$('man').hidden=$('set').hidden=true});
+if(window.api){
+$('lib').hidden=false;let LIB='',LASTOUT='',PLS=[],SORT=[];
+let tt,TD='';const toast=(h,dir)=>{const t=$('toast');TD=dir||'';t.innerHTML=h;t.style.cursor=TD?'pointer':'default';t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>{t.hidden=true},TD?12000:6000)};$('toast').onclick=()=>{$('toast').hidden=true;if(TD){api.open(TD);api.win('min')}};
+const p0=$('msg').parentElement;$('lib').appendChild($('msg'));p0.hidden=true;
+$('bf').onclick=()=>$('fm').click();$('fm').onchange=e=>{loadAny(e.target.files);e.target.value=''};
+const hl=()=>{const n=files.names?(files.names.txt||files.names.m3u||''):'';[...$('pl').children].forEach(b=>b.classList.toggle('on',!!n&&tracks.length>0&&b.dataset.n===n))};window.hlPl=hl;
+const ob=build;build=()=>{ob();$('loaded').textContent=tracks.length?'Loaded: '+bn()+' ('+tracks.length+' tracks)':'';hl()};
+window.addEventListener('focus',()=>{if(LIB)scan(LIB).catch(()=>{})});$('outpick').hidden=false;$('expm3u').textContent='Sort and save';
+$('outpick').onclick=async()=>{const d=await api.pick();if(d){localStorage.setItem('outDir',d);$('xmsg').textContent='Files will be saved to '+d;refSet()}};
+dl=(name,text)=>saveAll([{name,text}]);
+var saveAll=async function(es){const od=localStorage.getItem('outDir')||'',b=$('expm3u'),pl=es.length+' playlist'+(es.length>1?'s':'');b.textContent='Sorting...';try{const r=await api.save(od,LIB,es);if(r.ok){LASTOUT=r.dir;$('xmsg').textContent='Saved '+pl+' to '+r.dir;toast('<b>Done!</b> '+pl+' sorted and saved to<br>'+esc(r.dir)+'<br><small style="color:var(--mute)">Click to open the folder</small>',r.dir);b.textContent='Done \u2713';refSorted();if(!od&&!LIB){localStorage.setItem('outDir',r.base);refSet()}}else{$('xmsg').textContent=r.err==='cancelled'?'':'Could not save: '+r.err;if(r.err!=='cancelled')toast('Could not save: '+esc(r.err))}}catch(e){$('xmsg').textContent='Could not save: '+e.message}setTimeout(()=>{b.textContent='Sort and save'},3000)};
+async function scan(dir,auto){const g=await api.scan(dir);LIB=dir;PLS=g;$('delpl').hidden=!g.length;refSorted();$('libp').textContent=dir;localStorage.setItem('lastDir',dir);
+ $('pl').innerHTML=g.length?g.map((x,i)=>`<button class="m" data-i="${i}" data-n="${esc(x.name)}">${esc(x.name)}<br><small style="color:var(--mute);font-weight:400">${x.txt&&x.m3u?'tracklist + file locations':x.txt?'tracklist only (no file locations)':'file locations only (no BPM or key)'}</small></button>`).join(''):'<span class="hint">No .txt or .m3u files in this folder.</span>';
+ $('pl').onclick=async e=>{const b=e.target.closest('button');if(!b)return;const x=g[b.dataset.i];files={names:{}};
+  for(const [k,c,sn] of [['txt','c1','s1'],['m3u','c2','s2']]){if(!x[k]){$(sn).textContent='';$(c).classList.remove('ok');continue}
+   const t=dec(await api.read(x[k]));files[k]=k==='txt'?parseTxt(t):parseM3u(t);files.names[k]=x.name;$(sn).textContent=x.name;$(c).classList.add('ok')}
+  build()};
+ hl();if(auto&&g.length===1&&!tracks.length)$('pl').firstElementChild?.click()}
+$('pick').onclick=async()=>{const d=await api.pick();if(d)scan(d,true)};
+const SK=['smooth','waves','wd','kf','xs','gs','yr'],TK=['gg','gy','na'];
+function saveSet(){localStorage.setItem('set',JSON.stringify({mode,v:Object.fromEntries(SK.map(k=>[k,$(k).value])),t:Object.fromEntries(TK.map(k=>[k,$(k).classList.contains('on')]))}))}
+try{const s=JSON.parse(localStorage.getItem('set')||'null');if(s){SK.forEach(k=>{if(s.v&&s.v[k]!=null)$(k).value=s.v[k]});TK.forEach(k=>{const on=!s.t||s.t[k]!==false;$(k).classList.toggle('on',on);$(k).setAttribute('aria-pressed',on)});$('gsv').textContent=$('gs').value+'%';mode=s.mode||'harm';[...$('modes').children].forEach(b=>b.classList.toggle('on',b.dataset.m===mode));$('modehint').textContent=MODES.find(m=>m[0]===mode)[2];$('wl').hidden=$('wl2').hidden=mode!=='wave'}}catch(e){}
+document.addEventListener('click',()=>setTimeout(saveSet,0));document.addEventListener('change',()=>setTimeout(saveSet,0));
+const last=localStorage.getItem('lastDir');if(last)scan(last,true).catch(()=>{});
+$('setb').hidden=false;
+function refSet(){const o=localStorage.getItem('outDir');const d=o||(LIB?'Same as the exports folder (files are saved directly in it)':'Not set. You are asked on the first export.');$('sp1').textContent=$('libp').textContent=LIB||'Not set';$('sp2').textContent=$('fp2').textContent=d}
+$('setb').onclick=()=>{refSet();$('set').hidden=false};
+$('sd').onclick=()=>$('set').hidden=true;$('set').onclick=e=>{if(e.target.id==='set')$('set').hidden=true};
+$('sc1').onclick=async()=>{const d=await api.pick();if(d){await scan(d,true);refSet()}};
+$('sx1').onclick=()=>{LIB='';localStorage.removeItem('lastDir');PLS=[];$('delpl').hidden=true;refSorted();$('pl').innerHTML='';$('libp').textContent='';refSet()};
+$('sc2').onclick=async()=>{const d=await api.pick();if(d){localStorage.setItem('outDir',d);$('xmsg').textContent='Files will be saved to '+d;refSet()}};
+$('sx2').onclick=()=>{localStorage.removeItem('outDir');$('xmsg').textContent='';refSet()};
+$('so2').onclick=$('openf').onclick=()=>{const o=LASTOUT||localStorage.getItem('outDir')||LIB;if(o)api.open(o)};
+const thb=()=>{const t=document.documentElement.dataset.theme||'dark';$('thd').classList.toggle('on',t==='dark');$('thl').classList.toggle('on',t==='light')};
+const setTheme=t=>{document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);thb()};
+$('thd').onclick=()=>setTheme('dark');$('thl').onclick=()=>setTheme('light');thb();
+const fnb=()=>{const f=document.documentElement.dataset.font||'new';[['fn','new'],['fp','prev'],['ft','tech']].forEach(([i,v])=>$(i).classList.toggle('on',f===v))};
+const setFont=v=>{document.documentElement.dataset.font=v;localStorage.setItem('font',v);fnb()};
+$('fn').onclick=()=>setFont('new');$('fp').onclick=()=>setFont('prev');$('ft').onclick=()=>setFont('tech');fnb();
+const fsOn=()=>localStorage.getItem('fs')!=='0';
+const fsb=()=>{$('fsb').textContent='Open in fullscreen: '+(fsOn()?'on':'off');$('fsb').classList.toggle('on',fsOn())};
+$('fsb').onclick=()=>{localStorage.setItem('fs',fsOn()?'0':'1');fsb()};fsb();api.fs(fsOn()).then(()=>api.isFs()).then(v=>setFsUi(v));
+const FSI={e:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg>',c:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg>'};
+const setFsUi=on=>{$('wc').hidden=!on;$('fsi').innerHTML=on?FSI.c:FSI.e;$('fsi').title=on?'Exit fullscreen':'Fullscreen'};
+$('fsi').hidden=false;setFsUi(true);$('fsi').onclick=async()=>{api.fs(!(await api.isFs()))};api.onFs(setFsUi);refSorted();
+$('wmin').onclick=()=>api.win('min');$('wmax').onclick=()=>api.win('max');$('wcls').onclick=()=>api.win('close');
+async function refSorted(){const dirs=[LIB,localStorage.getItem('outDir')].filter(Boolean);SORT=dirs.length?await api.sorted(dirs):[];$('delsrt').hidden=!SORT.length;$('delsrt').textContent='Delete sorted playlists ('+SORT.length+')';$('delrow').hidden=!(PLS.length||SORT.length)}
+$('delsrt').onclick=async()=>{if(!SORT.length)return;const r=await api.trash(SORT.map(x=>x.path));if(!r||r.cancelled)return;LASTOUT='';await refSorted();toast('<b>Done!</b> '+r.moved+' sorted item(s) moved to the Recycle Bin.'+(r.failed?' '+r.failed+' could not be moved.':''))};
+$('delpl').onclick=async()=>{const fl=PLS.flatMap(x=>[x.txt,x.m3u]).filter(Boolean);if(!fl.length)return;const r=await api.trash(fl);if(!r||r.cancelled)return;$('clr').onclick();if(LIB)await scan(LIB);toast(r.failed?'<b>Done.</b> '+r.moved+' file(s) moved to the Recycle Bin. '+r.failed+' could not be moved.':'<b>Done!</b> '+r.moved+' playlist file(s) moved to the Recycle Bin.')};
+refSet();
+}
+fillStart();render();
+</script></body></html>
