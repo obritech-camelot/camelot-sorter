@@ -1,0 +1,28 @@
+name: Build installers
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            cmd: npx electron-builder --win --publish never
+          - os: macos-latest
+            cmd: npx electron-builder --mac --x64 --arm64 --publish never
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - run: ${{ matrix.cmd }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
